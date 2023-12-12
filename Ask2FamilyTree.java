@@ -21,6 +21,7 @@ class Node {
         this.name = name;
         this.gender = gender;
         this.Parent = null;
+        System.out.println(this.name + ", " + this.gender);
     }
 
     // Logic Functions
