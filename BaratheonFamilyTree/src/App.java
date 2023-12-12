@@ -53,7 +53,7 @@ class Node {
         return this.Relations;
     }
 }
-class Ask2FamilyTree {
+class App {
     public static void main(String[] args) {
         //Simulating already read file with manually setting graph
         Node Connor = new Node("Connor Baratheon", Gender.Male);
