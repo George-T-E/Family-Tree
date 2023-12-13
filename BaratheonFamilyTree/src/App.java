@@ -9,7 +9,11 @@ class Node {
     private Node[] Parents;
     private ArrayList<Node> Relations = new ArrayList<Node>();
 
+<<<<<<< HEAD
     /* Overload constructor method to instantiate empty node to
+=======
+    /* Overload constructor method to instantiate empty node to 
+>>>>>>> origin/main
      * return in Node.getParents() incase of null Parents node. */
     public Node() {
         this.name = null;
@@ -51,12 +55,20 @@ class Node {
         if(this.Parents[1] == null && this.Parents[0] == null) {
             return new Node();
         }
+<<<<<<< HEAD
         if(gender == Gender.Female) {
             return this.Parents[1];
         } else if(gender == Gender.Male) {
             return this.Parents[0];
         } else return new Node();
 
+=======
+        if(gender == Gender.Male) {
+            return this.Parents[0];
+        } else if(gender == Gender.Female) {
+            return this.Parents[1];
+        } else return new Node();
+>>>>>>> origin/main
     }
     public ArrayList<Node> getRelationships() {
         return this.Relations;
@@ -70,7 +82,10 @@ class App {
         Node Aaron = new Node("Aaron Baratheon", Gender.Male);
         Connor.addRelation(Ashley);
         Connor.addRelation(Aaron);
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
         System.out.println("Get Connor's Parents Node: "+Connor.getParent(Gender.Male).getName());
         System.out.println("Get Ashley's Parents Node: "+Ashley.getParent(Gender.Male).getName());
         System.out.print(Connor.getName()+" relationships: ");
