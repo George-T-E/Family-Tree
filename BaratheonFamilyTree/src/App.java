@@ -105,6 +105,7 @@ class App {
     static Map<String, List<Tree>> family_tree_map = new HashMap<>();
     static Map<String, Person> persons_map = new HashMap<>();
     static Scanner input = new Scanner(System.in);
+    static private boolean isFileSelected = false;
     public static void main(String[] args) {
         main_menu();
     }
@@ -129,10 +130,16 @@ class App {
             switch(selected_option) {
                 case "1":
                     System.out.println("You have selected the option 1: Parse the csv file and print the result.");
+                    System.out.println("Please write the absolute path of the file so we can parse it.");
                     String file_path_name = input.nextLine();
                     parse_and_print_file(file_path_name);
                     break;
                 case "2":
+                    if(!isFileSelected) { // Declines the second option if the file with relationships is not inserted.
+                        System.out.println("You need to insert the csv file before you proceed to find a relationship.");
+                        ask_to_continue();
+                        break;
+                    }
                     System.out.println("You have selected the option 2: Find the relationship between two people.");
                     System.out.println("Enter the name of the first person.");
                     String input_first_person_name = input.nextLine();
@@ -151,6 +158,7 @@ class App {
             }
         }
     }
+
     /*
         Asks the user if he wants to continue using the program
      */
@@ -182,6 +190,7 @@ class App {
         }
     }
 
+    // Function that handles the functions for reading and parsing the csv file with the relationships.
     public static void parse_and_print_file(String filePathName) {
         sort_content_relations(Objects.requireNonNull(read_the_file(filePathName)));
         ask_to_continue();
@@ -190,20 +199,26 @@ class App {
      * trims the spaces and returns a String variable with the content of the file.
      */
     public static String read_the_file(String filePathName) {
-        String content = "";
-        try (BufferedReader br = new BufferedReader((new FileReader(filePathName)))) {
-            String current_line;
+        boolean askForFile = true;
+        while (askForFile) {
+            String content = "";
+            try (BufferedReader br = new BufferedReader((new FileReader(filePathName)))) {
+                String current_line;
 
-            while ((current_line = br.readLine()) != null) {
-                if (current_line.isEmpty()) continue;
-                current_line = current_line.trim();
-                content += current_line + "\n";
+                while ((current_line = br.readLine()) != null) {
+                    if (current_line.isEmpty()) continue;
+                    current_line = current_line.trim();
+                    content += current_line + "\n";
+                }
+                askForFile = false;
+                return content;
+            } catch (IOException e) { // User gave invalid path/file
+                System.out.println("There was an error while reading the file: " + e.getMessage() + ". Select another file.");
+                isFileSelected = false;
+                ask_to_continue(); // Since the user gave invalid path/file, it will ask him if he wants to continue to return to the main menu
             }
-            return content;
-        } catch (IOException e) {
-            System.out.println("There was an error while reading the file: " + e.getMessage());
-            return null;
         }
+        return null;
     }
     /* This function receives the string file content as an input from the
      * function read_the_file and adds to the persons_list each person name and their gender.
@@ -254,10 +269,11 @@ class App {
         }
 
         System.out.println("Successfully added every person from the CSV file\n to the Family Tree.");
+        isFileSelected = true;
         ask_to_continue();
     }
 
-    // TODO MORE LATIONSHIPS
+    // Main function to find relations and search through the Tree the first person and the second person
     public static void find_relation(String firstPersonName, String secondPersonName) {
         if (persons_map.isEmpty()) {
             System.out.println("You need to input data from .csv file before we proceed with relationships.");
@@ -308,6 +324,22 @@ class App {
             result = check_grand_child_relation(firstPerson, secondPerson);
         }
 
+        if (result == null) {
+            result = check_nephew_niece_relation(firstPerson, secondPerson);
+        }
+
+        if (result == null) {
+            result = check_uncle_aunt_relation(firstPerson, secondPerson);
+        }
+
+        if (result == null) {
+            result = check_siblings_relation(firstPerson, secondPerson);
+        }
+
+        if (result == null) {
+            result = check_first_cousins_relation(firstPerson, secondPerson);
+        }
+
         // Add more relationship checks as needed
 
         return result;
@@ -348,12 +380,12 @@ class App {
         String first_person_name = firstPerson.getName();
         String second_person_name = secondPerson.getName();
         // Get the father or mother of the first person
-        Person first_person_father = (firstPerson.getFather() != null) ? firstPerson.getFather() : null;
-        Person first_person_mother = (firstPerson.getMother() != null) ? firstPerson.getMother() : null;
+        Person father_of_first_person = (firstPerson.getFather() != null) ? firstPerson.getFather() : null;
+        Person mother_of_first_person = (firstPerson.getMother() != null) ? firstPerson.getMother() : null;
 
         // Check if the second person is the grandparent of the first person
-        if ((first_person_father != null && first_person_father.getName().equals(second_person_name)) ||
-                (first_person_mother != null && first_person_mother.getName().equals(second_person_name))) {
+        if ((father_of_first_person != null && father_of_first_person.getName().equals(second_person_name)) ||
+                (mother_of_first_person != null && mother_of_first_person.getName().equals(second_person_name))) {
             String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Son" : "Daughter";
             return first_person_name + " is the " + genderRelation + " of " + second_person_name;
         }
@@ -361,7 +393,46 @@ class App {
         return null;
     }
 
+    // Checks if the first person and the second person are siblings
+    private static String check_siblings_relation(Person firstPerson, Person secondPerson) {
+        String first_person_name = firstPerson.getName();
+        String second_person_name = secondPerson.getName();
 
+        // Get the father and the mother of first and second persons
+        Person father_of_first_person = (firstPerson.getFather() != null) ? firstPerson.getFather() : null;
+        Person mother_of_first_person = (firstPerson.getMother() != null) ? firstPerson.getMother() : null;
+
+        Person father_of_second_person = (secondPerson.getFather() != null) ? secondPerson.getFather() : null;
+        Person mother_of_second_person = (secondPerson.getMother() != null) ? secondPerson.getMother() : null;
+
+        if(father_of_first_person == father_of_second_person || mother_of_first_person == mother_of_second_person) {
+            String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Brother" : "Sister";
+            return first_person_name + " is the " + genderRelation + " of " + second_person_name;
+        }
+
+        return null;
+    }
+
+    // Checks if the first person and the second person are cousins
+    private static String check_first_cousins_relation(Person firstPerson, Person secondPerson) {
+        String first_person_name = firstPerson.getName();
+        String second_person_name = secondPerson.getName();
+
+        // Get the grandfather and the grandmother of first and second persons
+        Person grandfather_of_first_person = (firstPerson.getFather().getFather() != null) ? firstPerson.getFather().getFather() : null;
+        Person grandmother_of_first_person = (firstPerson.getMother().getMother() != null) ? firstPerson.getMother().getMother() : null;
+
+        Person grandfather_of_second_person = (secondPerson.getFather().getFather() != null) ? secondPerson.getFather().getFather() : null;
+        Person grandmother_of_second_person = (secondPerson.getMother().getMother() != null) ? secondPerson.getMother().getMother() : null;
+
+        if(grandfather_of_first_person == grandfather_of_second_person || grandmother_of_first_person == grandmother_of_second_person) {
+            return first_person_name + " is cousin of " + second_person_name;
+        }
+
+        return null;
+    }
+
+    // Checks if they are Husband and Wife
     private static String check_spouse_relation(Person firstPerson, Person secondPerson) {
         String personName = firstPerson.getName();
         String otherPersonName = secondPerson.getName();
@@ -422,5 +493,43 @@ class App {
 
         return null;
     }
+
+
+    //Checks if the first person is nephew or niece of the second person
+    private static String check_nephew_niece_relation(Person firstPerson, Person secondPerson) {
+        String first_person_name = firstPerson.getName();
+        String second_person_name = secondPerson.getName();
+
+        Person grandfather_of_first_person = (firstPerson.getFather().getFather() != null) ? firstPerson.getFather().getFather() : null;
+        Person grandmother_of_first_person = (firstPerson.getMother().getMother() != null) ? firstPerson.getMother().getMother() : null;
+        Person father_of_second_person = (secondPerson.getFather() != null) ? secondPerson.getFather() : null;
+        Person mother_of_second_person = (secondPerson.getMother() != null) ? secondPerson.getMother() : null;
+
+        if (grandfather_of_first_person == father_of_second_person || grandmother_of_first_person == mother_of_second_person) {
+            String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Nephew" : "Niece";
+            return first_person_name + " is the " + genderRelation + " of " + second_person_name;
+        }
+
+        return null;
+    }
+
+    // Checks if first person is aunt or uncle of the second person
+    private static String check_uncle_aunt_relation(Person firstPerson, Person secondPerson) {
+        String first_person_name = firstPerson.getName();
+        String second_person_name = secondPerson.getName();
+
+        Person father_of_first_person = (firstPerson.getFather() != null) ? firstPerson.getFather() : null;
+        Person mother_of_first_person = (firstPerson.getMother() != null) ? firstPerson.getMother() : null;
+        Person grandfather_of_second_person = (secondPerson.getFather().getFather() != null) ? secondPerson.getFather().getFather() : null;
+        Person grandmother_of_second_person = (secondPerson.getMother().getMother() != null) ? secondPerson.getMother().getMother() : null;
+
+        if (father_of_first_person == grandfather_of_second_person || mother_of_first_person == grandmother_of_second_person) {
+            String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Uncle" : "Aunt";
+            return first_person_name + " is the " + genderRelation + " of " + second_person_name;
+        }
+
+        return null;
+    }
+
 
 }
