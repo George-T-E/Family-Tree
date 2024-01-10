@@ -130,7 +130,7 @@ class App {
             switch(selected_option) {
                 case "1":
                     System.out.println("You have selected the option 1: Parse the csv file and print the result.");
-                    System.out.println("Please write the absolute path of the file so we can parse it.");
+                    System.out.println("Write the absolute path of the file:");
                     String file_path_name = input.nextLine();
                     parse_and_print_file(file_path_name);
                     break;
@@ -434,14 +434,14 @@ class App {
 
     // Checks if they are Husband and Wife
     private static String check_spouse_relation(Person firstPerson, Person secondPerson) {
-        String personName = firstPerson.getName();
-        String otherPersonName = secondPerson.getName();
+        String first_person_name = firstPerson.getName();
+        String second_person_name = secondPerson.getName();
 
         Person spouse = (firstPerson.getSpouse() != null) ? firstPerson.getSpouse() : null;
 
-        if (spouse != null && spouse.getName().equals(otherPersonName)) {
-            String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Husband" : "Wife (Husband in input)";
-            return otherPersonName + " is " + genderRelation + " of " + personName;
+        if (spouse != null && spouse.getName().equals(second_person_name)) {
+            String genderRelation = (firstPerson.getGender() == Gender.Male) ? "Husband" : "Wife";
+            return first_person_name + " is " + genderRelation + " of " + second_person_name;
         }
 
         return null;
