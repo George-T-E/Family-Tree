@@ -16,10 +16,6 @@ class Person {
     private Gender gender;
     private Person spouse, father, mother;
 
-//    private Person[] Parents;
-    private ArrayList<Person> relations_list = new ArrayList<Person>(); //TODO MAYBE IT WILL GET REMOVED
-
-
     /* Overload constructor method to instantiate empty node to
      * return in Node.getParents() in case of null Parents node.
      * */
@@ -40,11 +36,9 @@ class Person {
         switch(relation) {
             case "mother":
                 this.mother = person;
-                this.relations_list.add(person);
                 break;
             case "father":
                 this.father = person;
-                this.relations_list.add(person);
                 break;
             case "husband":
                 this.spouse = person;
@@ -55,6 +49,7 @@ class Person {
         }
     }
 
+    // Takes the String with the gender and converts it to Gender enum.
     private Gender construct_gender(String gender_string) {
         gender_string = gender_string.trim().toLowerCase();
         if (gender_string.equals("male") || gender_string.equals("man")) {
@@ -90,20 +85,13 @@ class Person {
     public Person getMother() {
         return mother;
     }
-    //NOT USED METHOD YET
-//    public Person getParents(Gender gender) {
-//        if(gender == Gender.Male && this.father != null) {
-//            return this.father;
-//        } else if(gender == Gender.Female && this.mother != null) {
-//            return this.mother;
-//        } else return new Person(); //father or mother does not exist
-//    }
+
 
 }
 
+// This is the main application Class.
 class App {
-    static Map<String, List<Tree>> family_tree_map = new HashMap<>();
-    static Map<String, Person> persons_map = new HashMap<>();
+    static Map<String, Person> persons_map = new HashMap<>(); // This is the family tree
     static Scanner input = new Scanner(System.in);
     static private boolean isFileSelected = false;
     public static void main(String[] args) {
