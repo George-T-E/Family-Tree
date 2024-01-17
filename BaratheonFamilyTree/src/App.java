@@ -214,7 +214,6 @@ class App {
     public static void sort_content_relations(String file_content) {
         if(!persons_map.isEmpty()) persons_map.clear();
         String[] content_lines = file_content.split("\n");
-//        ArrayList<Person> personsArrayList = new ArrayList<>();
         Person person_to_be_related;
         Person person_to_store_his_relative;
 
@@ -327,8 +326,6 @@ class App {
         if (result == null) {
             result = check_first_cousins_relation(firstPerson, secondPerson);
         }
-
-        // Add more relationship checks as needed
 
         return result;
     }
@@ -518,6 +515,4 @@ class App {
 
         return null;
     }
-
-
 }
