@@ -328,8 +328,6 @@ class App {
             result = check_first_cousins_relation(firstPerson, secondPerson);
         }
 
-        // Add more relationship checks as needed
-
         return result;
     }
 
