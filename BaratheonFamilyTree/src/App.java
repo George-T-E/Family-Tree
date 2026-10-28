@@ -137,8 +137,8 @@ class App {
                     break;
                 case "3":
                     System.out.println("You have selected the option 3: Exit the program.");
-                    isActive = false;
-                    break;
+                    System.out.println("Family Tree program will terminate, good bye!");
+                    System. exit(0);
                 default:
                     System.out.println("Invalid option.");
                     System.out.println("Choose from an option between 1 and 3.");
@@ -214,7 +214,6 @@ class App {
     public static void sort_content_relations(String file_content) {
         if(!persons_map.isEmpty()) persons_map.clear();
         String[] content_lines = file_content.split("\n");
-//        ArrayList<Person> personsArrayList = new ArrayList<>();
         Person person_to_be_related;
         Person person_to_store_his_relative;
 
@@ -516,6 +515,4 @@ class App {
 
         return null;
     }
-
-
 }
